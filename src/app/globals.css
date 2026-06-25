@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #080808;
+  --color-surface: #111111;
+  --color-surface-2: #161616;
+  --color-border: #1f1f1f;
+  --color-gain: #00ff7f;
+  --color-loss: #ff4444;
+  --color-accent: #39ff14;
+  --color-muted: #6b7280;
+  --color-muted-2: #374151;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --animate-ticker: ticker 40s linear infinite;
+  --animate-ticker-reverse: ticker 40s linear infinite reverse;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+  from { background-position: 0% center; }
+  to { background-position: -200% center; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background-color: #080808;
+    color: #ededed;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #080808;
+    color: #ededed;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0a0a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1f1f1f;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #374151;
+  }
+
+  * {
+    scrollbar-color: #1f1f1f #0a0a0a;
+    scrollbar-width: thin;
+  }
+
+  ::selection {
+    background-color: rgba(57, 255, 20, 0.2);
+    color: #ededed;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  input,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
