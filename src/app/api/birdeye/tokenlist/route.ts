@@ -11,7 +11,7 @@ export async function GET() {
       sort_type: "desc",
       offset: "0",
       limit: "30",
-    });
+    }, 60);
     const parsed = TokenListResponseSchema.safeParse(raw);
     const data = parsed.success ? parsed.data : raw;
     return NextResponse.json(data, {

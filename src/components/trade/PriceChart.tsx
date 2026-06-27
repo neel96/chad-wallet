@@ -31,12 +31,12 @@ interface PriceChartProps {
 export function PriceChart({ mint }: PriceChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  // typed as any-series union so we can switch between candle / line
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | ISeriesApi<"Line"> | null>(null);
+  const seriesTypeRef = useRef<"Candlestick" | "Line" | null>(null);
   const volSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
   const [interval, setInterval] = useState<ChartInterval>("15m");
-  const { chartData, isLineOnly, isLoading } = useTokenChart(mint, interval);
+  const { chartData, isLineOnly, isLoading, isValidating } = useTokenChart(mint, interval);
 
   // Initialize chart once
   useEffect(() => {
@@ -71,6 +71,7 @@ export function PriceChart({ mint }: PriceChartProps) {
       wickDownColor: "#ff4444",
     });
     seriesRef.current = candleSeries;
+    seriesTypeRef.current = "Candlestick";
 
     const volSeries = chart.addSeries(HistogramSeries, {
       color: "#1f1f1f",
@@ -98,6 +99,7 @@ export function PriceChart({ mint }: PriceChartProps) {
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
+      seriesTypeRef.current = null;
       volSeriesRef.current = null;
     };
   }, []);
@@ -108,24 +110,22 @@ export function PriceChart({ mint }: PriceChartProps) {
     if (!chart || !chartData.length) return;
 
     if (isLineOnly) {
-      // Replace candlestick with line series
-      if (seriesRef.current) {
-        chart.removeSeries(seriesRef.current);
+      if (seriesTypeRef.current !== "Line") {
+        if (seriesRef.current) chart.removeSeries(seriesRef.current);
+        const lineSeries = chart.addSeries(LineSeries, {
+          color: "#39ff14",
+          lineWidth: 2,
+        });
+        seriesRef.current = lineSeries;
+        seriesTypeRef.current = "Line";
       }
-      const lineSeries = chart.addSeries(LineSeries, {
-        color: "#39ff14",
-        lineWidth: 2,
-      });
-      lineSeries.setData(
+      (seriesRef.current as ISeriesApi<"Line">).setData(
         chartData.map((d) => ({ time: d.time as UTCTimestamp, value: d.close }))
       );
-      seriesRef.current = lineSeries;
     } else {
-      // Ensure we have a candlestick series
-      let candleSeries = seriesRef.current as ISeriesApi<"Candlestick"> | null;
-      if (!candleSeries || (seriesRef.current as ISeriesApi<"Line">)) {
+      if (seriesTypeRef.current !== "Candlestick") {
         if (seriesRef.current) chart.removeSeries(seriesRef.current);
-        candleSeries = chart.addSeries(CandlestickSeries, {
+        const candleSeries = chart.addSeries(CandlestickSeries, {
           upColor: "#00ff7f",
           downColor: "#ff4444",
           borderUpColor: "#00ff7f",
@@ -134,8 +134,9 @@ export function PriceChart({ mint }: PriceChartProps) {
           wickDownColor: "#ff4444",
         });
         seriesRef.current = candleSeries;
+        seriesTypeRef.current = "Candlestick";
       }
-      candleSeries.setData(
+      (seriesRef.current as ISeriesApi<"Candlestick">).setData(
         chartData.map((d) => ({
           time: d.time as UTCTimestamp,
           open: d.open,
@@ -174,6 +175,9 @@ export function PriceChart({ mint }: PriceChartProps) {
             {label}
           </button>
         ))}
+        {isValidating && (
+          <div className="ml-auto mr-1 size-3 rounded-full border border-[#6b7280] border-t-transparent animate-spin" />
+        )}
       </div>
 
       {/* Chart container */}

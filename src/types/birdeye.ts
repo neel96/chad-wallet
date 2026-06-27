@@ -62,12 +62,19 @@ export const TokenOverviewResponseSchema = z.object({
 
 export const OHLCVBarSchema = z.object({
   unixTime: z.number(),
-  open: z.number(),
-  high: z.number(),
-  low: z.number(),
-  close: z.number(),
-  volume: z.number().optional(),
-});
+  o: z.number(),
+  h: z.number(),
+  l: z.number(),
+  c: z.number(),
+  v: z.number().optional(),
+}).transform((bar) => ({
+  unixTime: bar.unixTime,
+  open: bar.o,
+  high: bar.h,
+  low: bar.l,
+  close: bar.c,
+  volume: bar.v,
+}));
 
 export type OHLCVBar = z.infer<typeof OHLCVBarSchema>;
 

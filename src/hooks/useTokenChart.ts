@@ -19,9 +19,9 @@ export interface CandlestickPoint {
 }
 
 export function useTokenChart(mint: string | null, interval: ChartInterval = "15m") {
-  const { data, error, isLoading } = useSWR<RawOHLCVResponse>(
+  const { data, error, isLoading, isValidating } = useSWR<RawOHLCVResponse>(
     mint ? `/api/birdeye/history?address=${mint}&type=${interval}` : null,
-    { refreshInterval: 15_000, revalidateOnFocus: false }
+    { refreshInterval: 60_000, revalidateOnFocus: false }
   );
 
   const chartData = useMemo<CandlestickPoint[]>(() => {
@@ -43,5 +43,5 @@ export function useTokenChart(mint: string | null, interval: ChartInterval = "15
     );
   }, [chartData]);
 
-  return { chartData, isLineOnly, error, isLoading };
+  return { chartData, isLineOnly, error, isLoading, isValidating };
 }

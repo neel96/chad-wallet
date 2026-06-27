@@ -32,7 +32,7 @@ export function TradingLayout({ mint }: { mint: string }) {
           <div className="flex flex-col overflow-hidden border-x border-[#1f1f1f]">
             <TokenHeader mint={mint} />
             <div className="flex-1 min-h-0">
-              <PriceChart mint={mint} />
+              <PriceChart key={mint} mint={mint} />
             </div>
             <div className="h-64 min-h-0 overflow-hidden">
               <TradeTabs mint={mint} />
@@ -93,7 +93,7 @@ export function TradingLayout({ mint }: { mint: string }) {
           {mobileTab === "chart" && (
             <div className="flex flex-col h-full">
               <div className="flex-1 min-h-0">
-                <PriceChart mint={mint} />
+                <PriceChart key={mint} mint={mint} />
               </div>
               <div className="h-48 overflow-hidden">
                 <TradeTabs mint={mint} />

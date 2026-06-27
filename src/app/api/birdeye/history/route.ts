@@ -19,9 +19,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Invalid interval" }, { status: 400 });
   }
 
-  const params: Record<string, string> = { address, type };
-  if (timeFrom && /^\d+$/.test(timeFrom)) params.time_from = timeFrom;
-  if (timeTo && /^\d+$/.test(timeTo)) params.time_to = timeTo;
+  const now = Math.floor(Date.now() / 1000);
+  const params: Record<string, string> = {
+    address,
+    type,
+    time_to: (timeTo && /^\d+$/.test(timeTo)) ? timeTo : String(now),
+    time_from: (timeFrom && /^\d+$/.test(timeFrom)) ? timeFrom : String(now - 90 * 24 * 60 * 60),
+  };
 
   try {
     const raw = await birdeye.fetch<unknown>("/defi/ohlcv", params, 15);
