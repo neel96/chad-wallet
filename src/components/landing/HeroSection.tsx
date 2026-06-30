@@ -1,12 +1,67 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { usePrivy } from "@privy-io/react-auth";
 import { shortenAddress } from "@/lib/utils";
-import AppDownloadButtons from "./AppDownloadButtons";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const HAS_PRIVY = Boolean(process.env.NEXT_PUBLIC_PRIVY_APP_ID);
+
+const STAR_FIELD =
+  "radial-gradient(circle 1px at 5% 3%, rgba(255,255,255,0.9) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 12% 8%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 19% 2%, rgba(255,255,255,0.85) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 27% 14%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 34% 6%, rgba(255,255,255,0.75) 0%, transparent 100%)," +
+  "radial-gradient(circle 2px at 43% 10%, rgba(255,255,255,0.45) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 51% 4%, rgba(255,255,255,0.8) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 58% 16%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 66% 7%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 73% 3%, rgba(255,255,255,0.88) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 81% 12%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 88% 5%, rgba(255,255,255,0.75) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 94% 9%, rgba(255,255,255,0.8) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 97% 18%, rgba(255,255,255,0.55) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 3% 25%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 8% 35%, rgba(255,255,255,0.5) 0%, transparent 100%)," +
+  "radial-gradient(circle 2px at 16% 28%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 23% 40%, rgba(255,255,255,0.55) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 31% 32%, rgba(255,255,255,0.75) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 38% 22%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 47% 38%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 54% 27%, rgba(255,255,255,0.5) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 62% 33%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 70% 24%, rgba(255,255,255,0.8) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 77% 37%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 2px at 85% 28%, rgba(255,255,255,0.5) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 91% 40%, rgba(255,255,255,0.75) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 97% 22%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 6% 55%, rgba(255,255,255,0.5) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 14% 62%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 22% 50%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 30% 68%, rgba(255,255,255,0.55) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 39% 57%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 2px at 46% 73%, rgba(255,255,255,0.45) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 53% 60%, rgba(255,255,255,0.75) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 61% 66%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 69% 52%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 78% 70%, rgba(255,255,255,0.55) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 86% 58%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 93% 75%, rgba(255,255,255,0.8) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 4% 82%, rgba(255,255,255,0.5) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 11% 90%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 20% 85%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 29% 78%, rgba(255,255,255,0.55) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 37% 92%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 2px at 44% 80%, rgba(255,255,255,0.45) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 52% 88%, rgba(255,255,255,0.75) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 59% 83%, rgba(255,255,255,0.6) 0%, transparent 100%)," +
+  "radial-gradient(circle 1.5px at 67% 95%, rgba(255,255,255,0.7) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 74% 87%, rgba(255,255,255,0.55) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 83% 93%, rgba(255,255,255,0.65) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 90% 80%, rgba(255,255,255,0.8) 0%, transparent 100%)," +
+  "radial-gradient(circle 1px at 96% 88%, rgba(255,255,255,0.6) 0%, transparent 100%)";
 
 function AppleIcon() {
   return (
@@ -24,45 +79,6 @@ function GoogleIcon() {
       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
       <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
     </svg>
-  );
-}
-
-function SolanaIcon() {
-  return (
-    <svg
-  width="20"
-  height="20"
-  viewBox="0 0 397.7 311.7"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <defs>
-    <linearGradient
-      id="solana-gradient"
-      x1="360.879"
-      y1="351.455"
-      x2="141.213"
-      y2="-69.293"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop stopColor="#00FFA3" />
-      <stop offset="1" stopColor="#DC1FFF" />
-    </linearGradient>
-  </defs>
-
-  <path
-    d="M64.6 237.4c2.4-2.4 5.7-3.8 9.1-3.8h314.9c5.7 0 8.6 6.9 4.6 10.9l-62.2 62.2c-2.4 2.4-5.7 3.8-9.1 3.8H7c-5.7 0-8.6-6.9-4.6-10.9l62.2-62.2z"
-    fill="url(#solana-gradient)"
-  />
-  <path
-    d="M64.6 2.4C67 0 70.3-1.4 73.7-1.4h314.9c5.7 0 8.6 6.9 4.6 10.9L331 71.7c-2.4 2.4-5.7 3.8-9.1 3.8H7c-5.7 0-8.6-6.9-4.6-10.9L64.6 2.4z"
-    fill="url(#solana-gradient)"
-  />
-  <path
-    d="M331 119.3c-2.4-2.4-5.7-3.8-9.1-3.8H7c-5.7 0-8.6 6.9-4.6 10.9l62.2 62.2c2.4 2.4 5.7 3.8 9.1 3.8h314.9c5.7 0 8.6-6.9 4.6-10.9L331 119.3z"
-    fill="url(#solana-gradient)"
-  />
-</svg>
   );
 }
 
@@ -86,7 +102,7 @@ function AuthButtons() {
 
   if (authenticated) {
     return (
-      <div className="flex flex-col items-start gap-3">
+      <div className="flex flex-col items-center gap-3">
         <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#39ff14]/20 bg-[#39ff14]/5 text-sm text-[#39ff14]">
           <span
             className="size-2 rounded-full bg-[#39ff14] shrink-0"
@@ -106,14 +122,12 @@ function AuthButtons() {
     );
   }
 
-  // Render real buttons immediately — disabled with inline spinner while Privy initialises.
-  // This prevents an infinite skeleton when the domain isn't yet whitelisted in Privy.
   return (
-    <div className="flex flex-col sm:flex-row gap-3">
+    <div className="flex flex-col sm:flex-row gap-3 justify-center">
       <button
         onClick={() => login({ loginMethods: ["apple"] })}
         disabled={!ready}
-        className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-black font-semibold text-sm min-w-[210px] shadow-lg shadow-white/5 transition-all disabled:opacity-60 disabled:cursor-not-allowed enabled:hover:bg-gray-100 enabled:hover:scale-[1.02] enabled:active:scale-[0.97]"
+        className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-black font-semibold text-sm min-w-[200px] shadow-lg shadow-white/5 transition-all disabled:opacity-60 disabled:cursor-not-allowed enabled:hover:bg-gray-100 enabled:hover:scale-[1.02] enabled:active:scale-[0.97]"
       >
         {!ready ? <Spinner dark /> : <AppleIcon />}
         Sign in with Apple
@@ -121,7 +135,7 @@ function AuthButtons() {
       <button
         onClick={() => login({ loginMethods: ["google"] })}
         disabled={!ready}
-        className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl border border-[#252525] bg-[#111111] text-white font-semibold text-sm min-w-[210px] transition-all disabled:opacity-60 disabled:cursor-not-allowed enabled:hover:bg-[#181818] enabled:hover:scale-[1.02] enabled:active:scale-[0.97]"
+        className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl border border-[#252525] bg-[#111111] text-white font-semibold text-sm min-w-[200px] transition-all disabled:opacity-60 disabled:cursor-not-allowed enabled:hover:bg-[#181818] enabled:hover:scale-[1.02] enabled:active:scale-[0.97]"
       >
         {!ready ? <Spinner /> : <GoogleIcon />}
         Sign in with Google
@@ -132,150 +146,191 @@ function AuthButtons() {
 
 export default function HeroSection() {
   return (
-    <section id="hero" className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden">
-      {/* Ambient glow */}
+    <section id="hero" className="relative overflow-hidden">
+      {/* Dense star field */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: STAR_FIELD }}
+      />
+
+      {/* Cosmic nebula layers — all pointer-events-none so they never block buttons */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Planet-like atmosphere — top right */}
         <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full"
+          className="absolute -top-48 -right-48 w-[800px] h-[800px] rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, rgba(57,255,20,0.06) 0%, transparent 70%)",
-            animation: "glow-pulse 5s ease-in-out infinite",
+            background:
+              "radial-gradient(circle at 55% 45%, rgba(20,80,200,0.28) 0%, rgba(0,30,120,0.14) 35%, transparent 60%)",
           }}
         />
+        {/* Purple nebula cluster */}
         <div
-          className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(153,69,255,0.04) 0%, transparent 70%)" }}
+          className="absolute -top-24 -right-24 w-[600px] h-[600px] rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse, rgba(153,69,255,0.16) 0%, transparent 65%)",
+            animation: "glow-pulse 8s ease-in-out infinite",
+          }}
+        />
+        {/* Blue-teal — left edge */}
+        <div
+          className="absolute top-[25%] -left-24 w-[400px] h-[400px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(ellipse, rgba(0,150,255,0.08) 0%, transparent 65%)" }}
+        />
+        {/* Green center glow */}
+        <div
+          className="absolute top-[45%] left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] rounded-full pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(57,255,20,0.065) 0%, transparent 55%)",
+            animation: "glow-pulse 6s ease-in-out infinite 1s",
+          }}
         />
       </div>
 
-      {/* Subtle dot grid */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.025]"
-        style={{
-          backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      {/* ── Centered text content ── */}
+      <div className="relative z-10 max-w-4xl mx-auto px-6 pt-20 pb-12 text-center flex flex-col items-center">
+        {/* Floating logo */}
+        <div className="mb-8" style={{ animation: "float 6s ease-in-out infinite" }}>
+          <Image
+            src="/assets/images/logo/dark.png"
+            alt="ChadWallet"
+            width={96}
+            height={96}
+            className="rounded-[28px] shadow-[0_0_40px_rgba(57,255,20,0.2)]"
+            priority
+          />
+        </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 xl:gap-24 items-center">
-          {/* Left: content */}
-          <div className="flex flex-col gap-8 max-w-2xl">
-            {/* Live label */}
-            <div className="flex items-center gap-2 w-fit px-3.5 py-1.5 rounded-full border border-[#39ff14]/20 bg-[#39ff14]/5">
-              <span
-                className="size-1.5 rounded-full bg-[#39ff14] shrink-0"
-                style={{ animation: "glow-pulse 2s ease-in-out infinite" }}
-              />
-              <span className="text-xs font-medium text-[#39ff14] tracking-wide">POWERED BY SOLANA</span>
+        {/* Social proof pill */}
+        <div className="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full border border-[#39ff14]/20 bg-[#39ff14]/5">
+          <span
+            className="size-1.5 rounded-full bg-[#39ff14] shrink-0"
+            style={{ animation: "glow-pulse 2s ease-in-out infinite" }}
+          />
+          <span className="text-xs font-medium text-[#39ff14] tracking-wide">
+            join 50,000+ traders making their mark
+          </span>
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-[clamp(2.6rem,8vw,5.5rem)] font-black tracking-tighter leading-[0.92] text-white max-w-3xl">
+          where chads become{" "}
+          <span
+            style={{
+              background: "linear-gradient(90deg, #39ff14 0%, #a8ff5c 40%, #39ff14 80%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundSize: "200% auto",
+              animation: "shimmer 4s linear infinite",
+            }}
+          >
+            legends.
+          </span>
+        </h1>
+
+        <p className="mt-5 text-lg sm:text-xl text-[#9ca3af] leading-relaxed max-w-xl">
+          From memecoins to viral tokens, trade any Solana asset in seconds. The only wallet built for serious degens.
+        </p>
+
+        {/* CTAs */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 items-center justify-center">
+          <Link
+            href="/trade/So11111111111111111111111111111111111111112"
+            className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-[#39ff14] text-black font-bold text-sm hover:bg-[#5fff3d] transition-all hover:scale-[1.02] active:scale-[0.97] shadow-[0_0_24px_rgba(57,255,20,0.3)] min-w-[170px]"
+          >
+            Start trading
+            <svg viewBox="0 0 16 16" fill="none" className="size-4 shrink-0">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+          <a
+            href="#download"
+            className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-[#252525] bg-[#111111] text-white font-bold text-sm hover:bg-[#181818] hover:border-[#39ff14]/30 transition-all hover:scale-[1.02] active:scale-[0.97] min-w-[170px]"
+          >
+            Download app
+          </a>
+        </div>
+
+        {/* Auth */}
+        {HAS_PRIVY && (
+          <div className="mt-8">
+            <ErrorBoundary
+              fallback={<p className="text-sm text-[#6b7280]">Download the app to start trading.</p>}
+            >
+              <AuthButtons />
+            </ErrorBoundary>
+          </div>
+        )}
+      </div>
+
+      {/* ── Phone mockup — centered, large, below text ── */}
+      <div className="relative flex justify-center pb-0 px-6 overflow-visible">
+        <div className="relative" style={{ animation: "float 7s ease-in-out infinite" }}>
+          {/* Dual glow behind phone — pointer-events-none so scaled glows don't block buttons above */}
+          <div
+            className="absolute inset-0 rounded-[48px] -z-10 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse, rgba(57,255,20,0.28) 0%, transparent 65%)",
+              transform: "scale(1.25)",
+              animation: "glow-pulse 4s ease-in-out infinite",
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-[48px] -z-10 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse, rgba(153,69,255,0.12) 0%, transparent 75%)",
+              transform: "scale(1.7)",
+            }}
+          />
+
+          {/* Phone shell */}
+          <div className="relative w-[280px] sm:w-[320px] h-[560px] sm:h-[640px] rounded-[44px] border-[1.5px] border-[#252525] bg-[#0c0c0c] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.9),0_0_0_0.5px_rgba(255,255,255,0.05)_inset]">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 bg-[#0c0c0c] rounded-b-3xl z-10 flex items-end justify-center pb-1">
+              <div className="w-12 h-1 rounded-full bg-[#1a1a1a]" />
             </div>
-
-            {/* Headline */}
-            <div>
-              <h1 className="text-[clamp(3.5rem,8vw,6.5rem)] font-black tracking-tighter leading-[0.9] text-white">
-                Trade<br />
-                Solana<br />
-                <span
-                  style={{
-                    background: "linear-gradient(90deg, #39ff14 0%, #a8ff5c 40%, #39ff14 80%)",
-                    backgroundClip: "text",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundSize: "200% auto",
-                    animation: "shimmer 4s linear infinite",
-                    display: "block",
-                  }}
-                >
-                  Like a Chad.
-                </span>
-              </h1>
-              <p className="mt-6 text-lg sm:text-xl text-[#9ca3af] leading-relaxed max-w-lg">
-                The fastest Solana wallet for discovering trending tokens, trading memecoins, and copying top KOLs — all in one sleek app.
-              </p>
-            </div>
-
-            {/* Auth — only mount when Privy is configured; without a provider usePrivy() returns ready:false forever */}
-            {HAS_PRIVY && (
-              <ErrorBoundary
-                fallback={
-                  <p className="text-sm text-[#6b7280]">
-                    Download the app to start trading.
-                  </p>
-                }
-              >
-                <AuthButtons />
-              </ErrorBoundary>
-            )}
-
-            {/* App download */}
-            <div className="flex flex-col gap-4">
-              <p className="text-xs text-[#4b5563] uppercase tracking-widest font-medium">Available on</p>
-              <AppDownloadButtons />
-            </div>
-
-            {/* Solana badge */}
-            <div className="flex items-center gap-2 text-xs text-[#4b5563]">
-              <SolanaIcon />
-              <span>Built on Solana</span>
+            <Image
+              src="/assets/images/splash.png"
+              alt="ChadWallet App"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-[#0c0c0c]/80 to-transparent z-10 flex items-end justify-center pb-1.5">
+              <div className="w-24 h-1 rounded-full bg-white/20" />
             </div>
           </div>
 
-          {/* Right: phone mockup */}
-          <div className="hidden lg:flex justify-end items-center shrink-0">
-            <div className="relative" style={{ animation: "float 7s ease-in-out infinite" }}>
-              {/* Green glow behind phone */}
-              <div
-                className="absolute inset-0 rounded-[48px] -z-10"
-                style={{
-                  background: "radial-gradient(ellipse, rgba(57,255,20,0.25) 0%, transparent 70%)",
-                  transform: "scale(1.1)",
-                  animation: "glow-pulse 4s ease-in-out infinite",
-                }}
-              />
+          {/* Floating chips */}
+          <div
+            className="absolute -left-36 top-[22%] flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#252525] bg-[#0e0e0e]/95 backdrop-blur-sm shadow-2xl whitespace-nowrap"
+            style={{ animation: "float 5s ease-in-out infinite 0.5s" }}
+          >
+            <span className="text-[#39ff14] text-sm">⚡</span>
+            <div>
+              <div className="text-[10px] text-[#6b7280] leading-none mb-0.5">speed</div>
+              <div className="text-xs font-semibold text-white">Instant swaps</div>
+            </div>
+          </div>
 
-              {/* Phone shell */}
-              <div className="relative w-[280px] xl:w-[300px] h-[580px] xl:h-[620px] rounded-[44px] border-[1.5px] border-[#252525] bg-[#0c0c0c] overflow-hidden shadow-[0_60px_120px_rgba(0,0,0,0.9),0_0_0_0.5px_rgba(255,255,255,0.05)_inset]">
-                {/* Status bar notch */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 bg-[#0c0c0c] rounded-b-3xl z-10 flex items-end justify-center pb-1">
-                  <div className="w-12 h-1 rounded-full bg-[#1a1a1a]" />
-                </div>
-                <Image
-                  src="/assets/images/splash.png"
-                  alt="ChadWallet App"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                {/* Bottom home indicator area */}
-                <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-[#0c0c0c]/80 to-transparent z-10 flex items-end justify-center pb-1.5">
-                  <div className="w-24 h-1 rounded-full bg-white/20" />
-                </div>
-              </div>
+          <div
+            className="absolute -right-32 top-[38%] flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#39ff14]/25 bg-[#39ff14]/8 backdrop-blur-sm shadow-2xl whitespace-nowrap"
+            style={{ animation: "float 6s ease-in-out infinite 1s" }}
+          >
+            <span className="text-sm">🏆</span>
+            <div>
+              <div className="text-[10px] text-[#6b7280] leading-none mb-0.5">leaderboard</div>
+              <div className="text-xs font-semibold text-[#39ff14]">#1 Chad</div>
+            </div>
+          </div>
 
-              {/* Floating chips */}
-              <div
-                className="absolute -left-28 top-[22%] flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#252525] bg-[#0e0e0e]/95 backdrop-blur-sm shadow-2xl whitespace-nowrap"
-                style={{ animation: "float 5s ease-in-out infinite 0.5s" }}
-              >
-                <span className="text-[#39ff14] text-sm">⚡</span>
-                <span className="text-xs font-medium text-white">Instant swaps</span>
-              </div>
-
-              <div
-                className="absolute -right-24 top-[38%] flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#39ff14]/25 bg-[#39ff14]/8 backdrop-blur-sm shadow-2xl whitespace-nowrap"
-                style={{ animation: "float 6s ease-in-out infinite 1s" }}
-              >
-                <span className="text-sm">🔒</span>
-                <span className="text-xs font-medium text-[#39ff14]">Non-custodial</span>
-              </div>
-
-              <div
-                className="absolute -left-24 bottom-[28%] flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[#252525] bg-[#0e0e0e]/95 backdrop-blur-sm shadow-2xl whitespace-nowrap"
-                style={{ animation: "float 8s ease-in-out infinite 0.2s" }}
-              >
-                <span className="text-sm">📈</span>
-                <span className="text-xs font-medium text-white">Live charts</span>
-              </div>
+          <div
+            className="absolute -left-28 bottom-[28%] flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-[#252525] bg-[#0e0e0e]/95 backdrop-blur-sm shadow-2xl whitespace-nowrap"
+            style={{ animation: "float 8s ease-in-out infinite 0.2s" }}
+          >
+            <span className="text-sm">📈</span>
+            <div>
+              <div className="text-[10px] text-[#6b7280] leading-none mb-0.5">portfolio</div>
+              <div className="text-xs font-semibold text-white">+$12,480</div>
             </div>
           </div>
         </div>

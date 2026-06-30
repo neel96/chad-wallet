@@ -3,8 +3,9 @@ export const revalidate = 60;
 import { TickerBanner } from "@/components/landing/TickerBanner";
 import NavBar from "@/components/landing/NavBar";
 import HeroSection from "@/components/landing/HeroSection";
-import StatsSection from "@/components/landing/StatsSection";
+import TradeAnywhereSection from "@/components/landing/TradeAnywhereSection";
 import FeaturesGrid from "@/components/landing/FeaturesGrid";
+import StatsSection from "@/components/landing/StatsSection";
 import VideoSection from "@/components/landing/VideoSection";
 import FeatureRows from "@/components/landing/FeatureRows";
 import DownloadCTA from "@/components/landing/DownloadCTA";
@@ -38,8 +39,9 @@ export default async function LandingPage() {
       <NavBar />
       <main>
         <HeroSection />
-        <StatsSection />
+        <TradeAnywhereSection />
         <FeaturesGrid />
+        <StatsSection />
         <VideoSection />
         <FeatureRows />
         <DownloadCTA />

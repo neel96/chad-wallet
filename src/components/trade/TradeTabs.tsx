@@ -4,30 +4,38 @@ import { useState } from "react";
 import { HoldersList } from "./HoldersList";
 import { LiveTradesFeed } from "./LiveTradesFeed";
 
-type Tab = "trades" | "holders";
+type Tab = "holders" | "swaps";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "holders", label: "Holders" },
+  { id: "swaps", label: "Swaps" },
+];
 
 export function TradeTabs({ mint }: { mint: string }) {
-  const [tab, setTab] = useState<Tab>("trades");
+  const [tab, setTab] = useState<Tab>("swaps");
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 border-t border-[#1f1f1f]">
-      <div className="flex border-b border-[#1f1f1f]">
-        {(["trades", "holders"] as Tab[]).map((t) => (
+    <div className="flex flex-col h-full">
+      {/* Tab bar — fomo style: horizontal tabs with underline */}
+      <div className="flex items-end bg-[#080808] border-b border-[#1a1a1a] px-2">
+        {TABS.map((t) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex-1 py-2.5 text-xs font-medium uppercase tracking-wider transition-colors ${
-              tab === t
-                ? "text-white border-b-2 border-[#39ff14]"
-                : "text-[#6b7280] hover:text-white"
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`relative px-4 py-2.5 text-sm font-semibold transition-colors ${
+              tab === t.id ? "text-white" : "text-[#4b5563] hover:text-[#9ca3af]"
             }`}
           >
-            {t === "trades" ? "Live Trades" : "Top Traders"}
+            {t.label}
+            {tab === t.id && (
+              <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-white rounded-full" />
+            )}
           </button>
         ))}
       </div>
+
       <div className="flex-1 min-h-0 overflow-hidden">
-        {tab === "trades" ? (
+        {tab === "swaps" ? (
           <LiveTradesFeed mint={mint} />
         ) : (
           <HoldersList mint={mint} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { formatPrice, formatPctChange } from "@/lib/utils";
@@ -48,17 +48,24 @@ interface TickerBannerProps {
 
 export function TickerBanner({ tokens, variant = "top" }: TickerBannerProps) {
   const router = useRouter();
+  const [paused, setPaused] = useState(false);
+
   if (!tokens.length) return null;
 
   // Double array so CSS loop is seamless
   const doubled = [...tokens, ...tokens];
 
   return (
-    <div className={`w-full overflow-hidden bg-[#080808]/90 backdrop-blur-sm ${variant === "bottom" ? "border-t border-[#1f1f1f]" : "border-b border-[#1f1f1f]"}`}>
+    <div
+      className={`w-full overflow-hidden bg-[#080808]/90 backdrop-blur-sm ${variant === "bottom" ? "border-t border-[#1f1f1f]" : "border-b border-[#1f1f1f]"}`}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div
         className="flex items-center py-2"
         style={{
           animation: `ticker 40s linear infinite ${variant === "bottom" ? "reverse" : ""}`,
+          animationPlayState: paused ? "paused" : "running",
           width: "max-content",
         }}
       >

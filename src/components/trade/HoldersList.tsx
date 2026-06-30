@@ -16,23 +16,38 @@ const HolderRow = memo(function HolderRow({
 }) {
   const pnl = trader.pnlUsd ?? trader.pnl ?? 0;
   const isProfit = pnl >= 0;
+
   return (
-    <div className="flex items-center gap-2 px-3 py-2.5 hover:bg-[#111111] text-xs">
-      <span className="w-5 text-right text-[#6b7280] shrink-0">{rank}</span>
-      <span className="flex-1 font-mono text-white truncate">
-        {shortenAddress(trader.address)}
-      </span>
-      <span className="text-[#6b7280] tabular-nums shrink-0">
-        {formatVolume(trader.volume ?? 0)}
-      </span>
-      <span
-        className={`w-20 text-right font-mono tabular-nums shrink-0 ${
-          isProfit ? "text-[#00ff7f]" : "text-[#ff4444]"
-        }`}
-      >
-        {isProfit ? "+" : ""}
-        {formatVolume(pnl)}
-      </span>
+    <div className="flex items-center gap-3 px-3 py-2.5 hover:bg-[#0d0d0d] border-b border-[#0f0f0f] transition-colors">
+      <span className="w-5 text-right text-xs text-[#374151] shrink-0 font-bold tabular-nums">{rank}</span>
+
+      {/* Wallet avatar placeholder */}
+      <div className="size-7 rounded-full bg-[#1a1a1a] border border-[#1f1f1f] shrink-0 flex items-center justify-center">
+        <span className="text-[8px] font-bold text-[#4b5563]">{trader.address.slice(0, 2).toUpperCase()}</span>
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <a
+          href={`https://solscan.io/account/${trader.address}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-semibold text-[#9ca3af] hover:text-white truncate transition-colors font-mono block"
+        >
+          {shortenAddress(trader.address)}
+        </a>
+        {trader.tradeBuy != null && trader.tradeSell != null && (
+          <span className="text-[10px] text-[#374151]">
+            {trader.tradeBuy}B / {trader.tradeSell}S
+          </span>
+        )}
+      </div>
+
+      <div className="text-right shrink-0">
+        <div className="text-sm text-[#6b7280] font-mono tabular-nums">{formatVolume(trader.volume ?? 0)}</div>
+        <div className={`text-xs font-bold font-mono tabular-nums ${isProfit ? "text-[#22c55e]" : "text-[#ef4444]"}`}>
+          {isProfit ? "+" : ""}{formatVolume(pnl)}
+        </div>
+      </div>
     </div>
   );
 });
@@ -45,20 +60,19 @@ export function HoldersList({ mint }: { mint: string }) {
   const virtualizer = useVirtualizer({
     count: traders.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 40,
+    estimateSize: () => 48,
     overscan: 10,
   });
 
-  if (isLoading && !traders.length) return <SkeletonRow count={6} />;
+  if (isLoading && !traders.length) return <SkeletonRow count={5} />;
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-[#1f1f1f] text-[10px] uppercase tracking-wider text-[#6b7280]">
-        <span className="w-5 text-right">#</span>
-        <span className="flex-1">Wallet</span>
-        <span>Volume</span>
-        <span className="w-20 text-right">PnL</span>
+      <div className="flex items-center gap-3 px-3 py-1.5 border-b border-[#1a1a1a] bg-[#080808]">
+        <span className="w-5 text-right text-[10px] font-semibold uppercase tracking-wider text-[#374151]">#</span>
+        <span className="size-7 shrink-0" />
+        <span className="flex-1 text-[10px] font-semibold uppercase tracking-wider text-[#374151]">Trader</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#374151]">Vol / PnL</span>
       </div>
 
       <div ref={parentRef} className="flex-1 overflow-y-auto">

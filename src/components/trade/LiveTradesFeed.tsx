@@ -7,29 +7,72 @@ import { shortenAddress, formatPrice, timeAgo } from "@/lib/utils";
 import { SkeletonRow } from "@/components/ui/Skeleton";
 import type { TokenTx } from "@/types/birdeye";
 
+function formatUsd(n: number): string {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${n.toFixed(2)}`;
+}
+
 const TradeRow = memo(function TradeRow({ tx }: { tx: TokenTx }) {
   const isBuy = tx.side === "buy";
+  const usdValue = tx.priceUsd != null && tx.from.uiAmount != null
+    ? tx.priceUsd * tx.from.uiAmount
+    : null;
+  const tokenAmt = tx.from.uiAmount ?? null;
+
   return (
-    <div className="flex items-center gap-2 px-3 py-2 hover:bg-[#111111] text-xs border-b border-[#1f1f1f]/50">
-      <span
-        className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase shrink-0 ${
-          isBuy
-            ? "bg-[#00ff7f]/10 text-[#00ff7f]"
-            : "bg-[#ff4444]/10 text-[#ff4444]"
-        }`}
-      >
-        {tx.side}
+    <div
+      className={`relative flex items-center gap-2.5 px-3 py-2 text-xs transition-colors border-b border-[#0f0f0f] ${
+        isBuy ? "hover:bg-[#022c1a]" : "hover:bg-[#2c0a0a]"
+      }`}
+    >
+      {/* Left accent */}
+      <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${isBuy ? "bg-[#22c55e]" : "bg-[#ef4444]"}`} />
+
+      {/* Side badge */}
+      <span className={`shrink-0 w-5 h-5 flex items-center justify-center rounded text-[10px] font-black ${
+        isBuy ? "bg-[#22c55e]/15 text-[#22c55e]" : "bg-[#ef4444]/15 text-[#ef4444]"
+      }`}>
+        {isBuy ? "B" : "S"}
       </span>
-      <span className="flex-1 font-mono text-white tabular-nums truncate">
-        {tx.from.uiAmount?.toFixed(2) ?? tx.from.amount.toString()} {tx.from.symbol ?? ""}
+
+      {/* USD amount — bold, colored */}
+      <span className={`font-mono font-bold tabular-nums min-w-[56px] text-sm ${
+        isBuy ? "text-[#22c55e]" : "text-[#ef4444]"
+      }`}>
+        {usdValue != null ? formatUsd(usdValue) : "—"}
       </span>
-      <span className="font-mono text-[#6b7280] tabular-nums shrink-0">
+
+      {/* Token amount */}
+      <span className="flex-1 font-mono text-[#6b7280] tabular-nums truncate text-xs">
+        {tokenAmt != null
+          ? tokenAmt >= 1_000_000
+            ? `${(tokenAmt / 1_000_000).toFixed(2)}M`
+            : tokenAmt >= 1_000
+            ? `${(tokenAmt / 1_000).toFixed(2)}K`
+            : tokenAmt.toFixed(2)
+          : "—"}
+        {" "}<span className="text-[#374151]">{tx.from.symbol ?? ""}</span>
+      </span>
+
+      {/* Price */}
+      <span className="font-mono text-[#4b5563] tabular-nums shrink-0 text-xs">
         {tx.priceUsd ? formatPrice(tx.priceUsd) : "—"}
       </span>
-      <span className="text-[#6b7280] truncate max-w-[60px]">
+
+      {/* Wallet */}
+      <a
+        href={`https://solscan.io/account/${tx.owner}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#4b5563] hover:text-[#9ca3af] truncate max-w-[56px] text-[10px] font-mono transition-colors"
+        onClick={(e) => e.stopPropagation()}
+      >
         {tx.owner ? shortenAddress(tx.owner) : "—"}
-      </span>
-      <span className="text-[#374151] shrink-0">{timeAgo(tx.blockUnixTime)}</span>
+      </a>
+
+      {/* Time */}
+      <span className="text-[#2d2d2d] shrink-0 text-[10px]">{timeAgo(tx.blockUnixTime)}</span>
     </div>
   );
 });
@@ -45,21 +88,23 @@ export function LiveTradesFeed({ mint }: { mint: string }) {
     overscan: 15,
   });
 
-  if (isLoading && !trades.length) return <SkeletonRow count={8} />;
+  if (isLoading && !trades.length) return <SkeletonRow count={6} />;
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-[#1f1f1f] text-[10px] uppercase tracking-wider text-[#6b7280]">
-        <span className="w-8">Side</span>
-        <span className="flex-1">Amount</span>
-        <span>Price</span>
-        <span>Wallet</span>
-        <span>Time</span>
+      {/* Column header */}
+      <div className="flex items-center gap-2.5 px-3 py-1.5 border-b border-[#1a1a1a] bg-[#080808]">
+        <span className="w-5 shrink-0" />
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#374151] min-w-[56px]">Value</span>
+        <span className="flex-1 text-[10px] font-semibold uppercase tracking-wider text-[#374151]">Amount</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#374151]">Price</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#374151] max-w-[56px]">Wallet</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#374151]">Time</span>
       </div>
 
       <div ref={parentRef} className="flex-1 overflow-y-auto">
         {!trades.length ? (
-          <div className="flex items-center justify-center h-32 text-sm text-[#6b7280]">
+          <div className="flex items-center justify-center h-24 text-sm text-[#374151]">
             No trades yet
           </div>
         ) : (
